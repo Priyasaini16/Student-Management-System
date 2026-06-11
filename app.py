@@ -49,7 +49,7 @@ def add_student():
         if not isinstance(age, int):
             return jsonify({"error": "Age must be a number"}), 400
 
-        query = "INSERT INTO students (name, age) VALUES (%s, %s)"
+        query = "INSERT INTO students (name, age) VALUES (?, ?)"
         cursor.execute(query, (name, age))
         db.commit()
 
@@ -75,7 +75,7 @@ def update_student(id):
         if not isinstance(age, int):
             return jsonify({"error": "Age must be a number"}), 400
 
-        query = "UPDATE students SET name=%s, age=%s WHERE id=%s"
+        query = "UPDATE students SET name=?, age=? WHERE id=?"
         cursor.execute(query, (name, age, id))
         db.commit()
 
@@ -90,7 +90,7 @@ def update_student(id):
 @app.route('/students/<int:id>', methods=['DELETE'])
 def delete_student(id):
     try:
-        query = "DELETE FROM students WHERE id=%s"
+        query = "DELETE FROM students WHERE id=?"
         cursor.execute(query, (id,))
         db.commit()
 
