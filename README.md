@@ -11,7 +11,7 @@ A simple Flask-based REST API for managing student records.
 ## Technologies Used
 - Python
 - Flask
-- MySQL
+- SQLite
 - REST API
 
 ## API Endpoints
