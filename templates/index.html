@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 800px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 180px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .update-btn {
+            background-color: #ffc107;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Student Management System</h1>
+
+    <div class="form-section">
+
+        <input
+            type="text"
+            id="name"
+            placeholder="Enter Name">
+
+        <input
+            type="number"
+            id="age"
+            placeholder="Enter Age">
+
+        <button
+            class="add-btn"
+            onclick="addStudent()">
+            Add Student
+        </button>
+
+    </div>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="studentTable">
+        </tbody>
+
+    </table>
+
+</div>
+
+<script>
+
+async function loadStudents() {
+
+    const response = await fetch('/students');
+    const students = await response.json();
+
+    let table = '';
+
+    students.forEach(student => {
+
+        table += `
+        <tr>
+
+            <td>${student.id}</td>
+            <td>${student.name}</td>
+            <td>${student.age}</td>
+
+            <td>
+                <button
+                    class="update-btn"
+                    onclick="updateStudent(${student.id}, '${student.name}', ${student.age})">
+                    Update
+                </button>
+            </td>
+
+            <td>
+                <button
+                    class="delete-btn"
+                    onclick="deleteStudent(${student.id})">
+                    Delete
+                </button>
+            </td>
+
+        </tr>
+        `;
+    });
+
+    document.getElementById('studentTable').innerHTML = table;
+}
+
+async function addStudent() {
+
+    const name = document.getElementById('name').value;
+    const age = parseInt(document.getElementById('age').value);
+
+    if (!name || !age) {
+        alert("Please enter name and age");
+        return;
+    }
+
+    await fetch('/students', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: name,
+            age: age
+        })
+    });
+
+    document.getElementById('name').value = '';
+    document.getElementById('age').value = '';
+
+    loadStudents();
+}
+
+async function updateStudent(id, oldName, oldAge) {
+
+    const newName = prompt("Enter new name:", oldName);
+    const newAge = prompt("Enter new age:", oldAge);
+
+    if (!newName || !newAge) {
+        return;
+    }
+
+    await fetch(`/students/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: newName,
+            age: parseInt(newAge)
+        })
+    });
+
+    loadStudents();
+}
+
+async function deleteStudent(id) {
+
+    if (!confirm("Are you sure?")) {
+        return;
+    }
+
+    await fetch(`/students/${id}`, {
+        method: 'DELETE'
+    });
+
+    loadStudents();
+}
+
+loadStudents();
+
+</script>
+
+</body>
+</html>
