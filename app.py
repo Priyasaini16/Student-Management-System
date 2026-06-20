@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from db import db, cursor
 
 app = Flask(__name__)
@@ -9,7 +9,8 @@ students = []
 
 @app.route('/')
 def home():
-    return "Hello, Backend Started!"
+    return render_template('index.html')
+    
 
 @app.route('/students', methods=['GET'])
 def get_students():
@@ -104,3 +105,4 @@ def delete_student(id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
